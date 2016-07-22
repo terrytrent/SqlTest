@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data.SQLite;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,20 +10,7 @@ namespace SqlLiteTest
 {
     public class sqliteCreation
     {
-        private bool checkIsvalid(string comparison, string pattern)
-        {
-            Regex comparisonRegex = new Regex(pattern);
-            bool match = comparisonRegex.IsMatch(comparison);
-            return match;
-        }
-
-        private void notValidThrowException(string objectToBeValidated, bool isObjectValidated, string nameOfObjectToBeValidated)
-        {
-            if (!isObjectValidated)
-            {
-                throw new System.Exception($"{nameOfObjectToBeValidated} is not valid: {objectToBeValidated}");
-            }
-        }
+        
 
         private void createDirectoryIfNotExist(string path)
         {
@@ -36,17 +22,20 @@ namespace SqlLiteTest
 
         public void createDBIfNotExist(string filePath, string dbName)
         {
+            Utility utility = new Utility();
+
             string fullPath = $"{filePath}\\{dbName}";
 
             string filePathRegex = @"^([\w]\:\\|\\\\)([a-zA-z\s\d\\_.-]+)(?:[^\\])$";
-            bool filePathIsValid = checkIsvalid(filePath, filePathRegex);
-            notValidThrowException(filePath,filePathIsValid, "File Path");
+            bool filePathIsValid = utility.checkIsvalid(filePath, filePathRegex);
+            utility.notValidThrowException(filePath, "is not valid", filePathIsValid, "File Path");
+
 
             createDirectoryIfNotExist(filePath);
 
             string dbNameRegex = @"^([\w\s\d\\_.-]+)+.(db)$";
-            bool dbNameIsValid = checkIsvalid(dbName, dbNameRegex);
-            notValidThrowException(dbName, dbNameIsValid, "DB Name");
+            bool dbNameIsValid = utility.checkIsvalid(dbName, dbNameRegex);
+            utility.notValidThrowException(dbName, "is not valid", dbNameIsValid, "DB Name");
            
             if(!File.Exists(fullPath))
             {
@@ -129,8 +118,6 @@ namespace SqlLiteTest
                     createNewTable(tableInfo, Connection);
                 }
             }
-            
         }
-
     }
 }
