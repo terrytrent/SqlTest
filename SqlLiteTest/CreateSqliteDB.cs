@@ -12,12 +12,12 @@ namespace SqlLiteTest
         public CreateSqliteDB()
         {
             string filePath = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).ToString() + "\\SqlLiteTest";
-            string dbName = "sqlite.dba";
+            string dbName = "sqlite.db";
+            string fullPath = $"{filePath}\\{dbName}";
             sqliteCreation createSqliteDB = new sqliteCreation();
             //createSqliteDB.createDBIfNotExist(filePath, dbName);
-            SQLiteConnection dbConnection =new SQLiteConnection($"{dbName};Version=3;");
+            SQLiteConnection dbConnection =new SQLiteConnection($"Data Source = {fullPath};Version=3;");
             dbConnection.Open();
-
 
             Dictionary<string, string> userInfoColumns = new Dictionary<string, string>();
             userInfoColumns.Add("int", "UniqueID");
@@ -29,7 +29,7 @@ namespace SqlLiteTest
             passWordsColumns.Add("int", "UniqueID");
             passWordsColumns.Add("text", "Password");
             Dictionary<string, Dictionary<string, string>> passWordsTable = new Dictionary<string, Dictionary<string, string>>();
-            userInfoTable.Add("passWords", passWordsColumns);
+            passWordsTable.Add("passWords", passWordsColumns);
 
             createSqliteDB.generateTables(userInfoTable,dbConnection);
             createSqliteDB.generateTables(passWordsTable,dbConnection);

@@ -60,15 +60,17 @@ namespace SqlLiteTest
             foreach (KeyValuePair<string, Dictionary<string, string>> Columns in tableInfo)
             {
                 string tableName = Columns.Key.ToString();
+                string firstColumn = Columns.Value.First().Value;
+                string firstType = Columns.Value.First().Key;
 
-                string newTableQuery = $"CREATE TABLE {tableName}";
+                string newTableQuery = $"CREATE TABLE {tableName} ({firstColumn} {firstType})";
                 SQLiteCommand NewTable = new SQLiteCommand(newTableQuery, Connection);
                 NewTable.ExecuteNonQuery();
 
-                foreach (KeyValuePair<string, string> column in Columns.Value)
+                foreach (KeyValuePair<string, string> column in Columns.Value.Skip(1))
                 {
-                    string columnName = column.Key.ToString();
-                    string columnType = column.Value.ToString();
+                    string columnName = column.Value.ToString();
+                    string columnType = column.Key.ToString();
 
                     string addColumnQuery = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {columnType};";
                     SQLiteCommand addColumn = new SQLiteCommand(addColumnQuery, Connection);
@@ -84,46 +86,47 @@ namespace SqlLiteTest
                 string tableName = Columns.Key;
 
                 string getTableQuery = $"SELECT name FROM sqlite_master WHERE type='table' AND name='{tableName}';";
-                string getColumnQuery = $"PRAGMA table_info({tableName})";
                 SQLiteCommand getTable = new SQLiteCommand(getTableQuery, Connection);
-                getTable.ExecuteReader();
-                
-                if(getTable != null)
+                SQLiteDataReader tableResult = getTable.ExecuteReader();
+
+                string getColumnQuery = $"PRAGMA table_info({tableName})";
+                SQLiteCommand getColumn = new SQLiteCommand(getColumnQuery, Connection);
+                SQLiteDataReader columnsResult = getColumn.ExecuteReader();
+                List<string> columnsList = new List<string>();
+
+                while(columnsResult.Read())
                 {
+                    string columnName = columnsResult.GetString(1);
+                    columnsList.Add(columnName);
+                }
+
+                if (tableResult.Read())
+                {
+                    bool columnsGood = true;
+
                     foreach (KeyValuePair<string,string> column in Columns.Value)
                     {
-                        string columnName = column.Key;
-                        bool columnsGood = true;
-                        int i = 0;
+                        string columnName = column.Value;
 
-                        do
+                        if(!columnsList.Contains(columnName))
                         {
-                            i++;
-                            
-                            SQLiteCommand getColumn = new SQLiteCommand(getColumnQuery, Connection);
-                            List<string> columnsResult = getColumn.ExecuteReader()
-
-                            if (columnsResult.)
-                            {
-                                columnsGood = false;
-                            }
+                            columnsGood = false;
                         }
-                        while (columnsGood && i <= (Columns.Value).Count);
+                    }
+                    if (!columnsGood)
+                    {
+                        tableResult.Close();
+                        columnsResult.Close();
+                        string deleteTableQuery = $"DROP TABLE {tableName}";
+                        SQLiteCommand deleteTable = new SQLiteCommand(deleteTableQuery, Connection);
+                        deleteTable.ExecuteNonQuery();
 
-                        if(!columnsGood)
-                        {
-                            string deleteTableQuery = $"";
-                            SQLiteCommand deleteTable = new SQLiteCommand(deleteTableQuery, Connection);
-                            deleteTable.ExecuteNonQuery();
-
-                            newTable(tableInfo);
-                            
-                        }
+                        createNewTable(tableInfo, Connection);
                     }
                 }
                 else
                 {
-                    newTable(TableInfo);
+                    createNewTable(tableInfo, Connection);
                 }
             }
             
