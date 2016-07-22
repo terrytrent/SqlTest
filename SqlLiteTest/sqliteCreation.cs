@@ -57,15 +57,22 @@ namespace SqlLiteTest
 
         private void createNewTable(Dictionary<string, Dictionary<string, string>> tableInfo, SQLiteConnection Connection)
         {
-            string newTableQuery = $"";
-            SQLiteCommand NewTable = new SQLiteCommand(newTableQuery, Connection);
-
             foreach (KeyValuePair<string, Dictionary<string, string>> Columns in tableInfo)
             {
+                string tableName = Columns.Key.ToString();
+
+                string newTableQuery = $"CREATE TABLE {tableName}";
+                SQLiteCommand NewTable = new SQLiteCommand(newTableQuery, Connection);
+                NewTable.ExecuteNonQuery();
+
                 foreach (KeyValuePair<string, string> column in Columns.Value)
                 {
-                    string addColumnQuery = $"ALTER TABLE {Columns.Key} ADD COLUMN {column.Key} {column.Value};";
+                    string columnName = column.Key.ToString();
+                    string columnType = column.Value.ToString();
+
+                    string addColumnQuery = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {columnType};";
                     SQLiteCommand addColumn = new SQLiteCommand(addColumnQuery, Connection);
+                    addColumn.ExecuteNonQuery();
                 }
             }
         }
@@ -74,22 +81,29 @@ namespace SqlLiteTest
         {
             foreach (KeyValuePair<string,Dictionary<string,string>> Columns in tableInfo)
             {
-                string getTableQuery = $"SELECT name FROM my_db.sqlite_master WHERE type='table' AND name='{Columns.Key}';";
+                string tableName = Columns.Key;
+
+                string getTableQuery = $"SELECT name FROM sqlite_master WHERE type='table' AND name='{tableName}';";
+                string getColumnQuery = $"PRAGMA table_info({tableName})";
                 SQLiteCommand getTable = new SQLiteCommand(getTableQuery, Connection);
+                getTable.ExecuteReader();
                 
                 if(getTable != null)
                 {
                     foreach (KeyValuePair<string,string> column in Columns.Value)
                     {
+                        string columnName = column.Key;
                         bool columnsGood = true;
                         int i = 0;
+
                         do
                         {
                             i++;
-                            string getColumnQuery = $"";
+                            
                             SQLiteCommand getColumn = new SQLiteCommand(getColumnQuery, Connection);
+                            List<string> columnsResult = getColumn.ExecuteReader()
 
-                            if (getColumn == null)
+                            if (columnsResult.)
                             {
                                 columnsGood = false;
                             }
@@ -100,6 +114,7 @@ namespace SqlLiteTest
                         {
                             string deleteTableQuery = $"";
                             SQLiteCommand deleteTable = new SQLiteCommand(deleteTableQuery, Connection);
+                            deleteTable.ExecuteNonQuery();
 
                             newTable(tableInfo);
                             
