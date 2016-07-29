@@ -21,7 +21,7 @@ namespace SqlLiteTest
             //calling demoData method - look at code in PopulateSqliteDB to see how to populate real data
             PopulateSqliteDB.demoData();
 
-            //calling getDemoData method - look at code in GetSqlitedata to see how to populate real data
+            //calling getDemoData method - look at code in GetSqlitedata to see how to get real data
             GetSqliteData.getDemoData();
         }
     }
