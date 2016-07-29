@@ -9,10 +9,9 @@ namespace SqlLiteTest
 {
     public class PopulateSqliteDB
     {
-        public void demoData()
+        public static void demoData()
         {
-            Utility utility = new Utility();
-            List<string> fileAndDirectoryInfo = utility.generateFileAndDirectoryInfo("SqlLiteTest", "sqlite.db");
+            List<string> fileAndDirectoryInfo = Utility.generateFileAndDirectoryInfo("SqlLiteTest", "sqlite.db");
             string fullPath = fileAndDirectoryInfo[2];
 
             SQLiteConnection dbConnection = new SQLiteConnection($"Data Source = {fullPath};Version=3;");

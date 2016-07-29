@@ -15,17 +15,14 @@ namespace SqlLiteTest
 
         public void Work()
         {
-            CreateSqliteDB createSqliteDB = new CreateSqliteDB();
             //calling createDemoDB method - look at code in CreateSqliteDB.cs to see how to create real database
-            createSqliteDB.createDemoDB();
+            CreateSqliteDB.createDemoDB();
 
-            PopulateSqliteDB populateSqliteDB = new PopulateSqliteDB();
             //calling demoData method - look at code in PopulateSqliteDB to see how to populate real data
-            populateSqliteDB.demoData();
+            PopulateSqliteDB.demoData();
 
-            GetSqliteData getsqlitedata = new GetSqliteData();
             //calling getDemoData method - look at code in GetSqlitedata to see how to populate real data
-            getsqlitedata.getDemoData();
+            GetSqliteData.getDemoData();
         }
     }
 

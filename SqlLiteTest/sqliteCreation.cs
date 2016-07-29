@@ -20,22 +20,21 @@ namespace SqlLiteTest
             }
         }
 
-        public void createDBIfNotExist(string filePath, string dbName)
+        public static void createDBIfNotExist(string filePath, string dbName)
         {
-            Utility utility = new Utility();
-
             string fullPath = $"{filePath}\\{dbName}";
 
+            sqliteCreation createDirectory = new sqliteCreation();
+
             string filePathRegex = @"^([\w]\:\\|\\\\)([a-zA-z\s\d\\_.-]+)(?:[^\\])$";
-            bool filePathIsValid = utility.checkIsvalid(filePath, filePathRegex);
-            utility.notValidThrowException(filePath, "is not valid", filePathIsValid, "File Path");
+            bool filePathIsValid = Utility.checkIsvalid(filePath, filePathRegex);
+            Utility.notValidThrowException(filePath, "is not valid", filePathIsValid, "File Path");
 
-
-            createDirectoryIfNotExist(filePath);
+            createDirectory.createDirectoryIfNotExist(filePath);
 
             string dbNameRegex = @"^([\w\s\d\\_.-]+)+.(db)$";
-            bool dbNameIsValid = utility.checkIsvalid(dbName, dbNameRegex);
-            utility.notValidThrowException(dbName, "is not valid", dbNameIsValid, "DB Name");
+            bool dbNameIsValid = Utility.checkIsvalid(dbName, dbNameRegex);
+            Utility.notValidThrowException(dbName, "is not valid", dbNameIsValid, "DB Name");
            
             if(!File.Exists(fullPath))
             {
@@ -68,11 +67,13 @@ namespace SqlLiteTest
             }
         }
 
-        public void generateTables(Dictionary<string,Dictionary<string,string>> tableInfo,SQLiteConnection Connection)
+        public static void generateTables(Dictionary<string,Dictionary<string,string>> tableInfo,SQLiteConnection Connection)
         {
             foreach (KeyValuePair<string,Dictionary<string,string>> Columns in tableInfo)
             {
                 string tableName = Columns.Key;
+
+                sqliteCreation newTabel = new sqliteCreation();
 
                 string getTableQuery = $"SELECT name FROM sqlite_master WHERE type='table' AND name='{tableName}';";
                 SQLiteCommand getTable = new SQLiteCommand(getTableQuery, Connection);
@@ -110,12 +111,13 @@ namespace SqlLiteTest
                         SQLiteCommand deleteTable = new SQLiteCommand(deleteTableQuery, Connection);
                         deleteTable.ExecuteNonQuery();
 
-                        createNewTable(tableInfo, Connection);
+                        
+                        newTabel.createNewTable(tableInfo, Connection);
                     }
                 }
                 else
                 {
-                    createNewTable(tableInfo, Connection);
+                    newTabel.createNewTable(tableInfo, Connection);
                 }
             }
         }

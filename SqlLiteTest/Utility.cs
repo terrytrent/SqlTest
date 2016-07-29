@@ -9,14 +9,14 @@ namespace SqlLiteTest
 {
     public class Utility
     {
-        public bool checkIsvalid(string comparison, string pattern)
+        public static bool checkIsvalid(string comparison, string pattern)
         {
             Regex comparisonRegex = new Regex(pattern);
             bool match = comparisonRegex.IsMatch(comparison);
             return match;
         }
 
-        public void notValidThrowException(string objectToBeValidated, string message, bool isObjectValidated, string nameOfObjectToBeValidated)
+        public static void notValidThrowException(string objectToBeValidated, string message, bool isObjectValidated, string nameOfObjectToBeValidated)
         {
             if (!isObjectValidated)
             {
@@ -24,7 +24,7 @@ namespace SqlLiteTest
             }
         }
 
-        public List<string> generateFileAndDirectoryInfo(string projectName,string dbName)
+        public static List<string> generateFileAndDirectoryInfo(string projectName,string dbName)
         {
             string filePath = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).ToString() + $"\\{projectName}";
             string fullPath = $"{filePath}\\{dbName}";
